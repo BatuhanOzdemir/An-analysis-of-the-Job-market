@@ -5,6 +5,8 @@ class JobAd:
         self.info = self.prep_info(info)
         self.update_date = update_date
         self.content = content
+        self.info.append(self.content)
+        self.info.append(self.update_date)
 
     # get methods
     def get_info(self):
