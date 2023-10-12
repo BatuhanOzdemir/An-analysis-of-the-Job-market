@@ -12,6 +12,7 @@ crawl.run()
 url_list = crawl.get_urls_for_job_ads()
 
 
+
 def gather_ads():
     ads_list = []
     for url in url_list:

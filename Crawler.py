@@ -7,7 +7,6 @@ logging.basicConfig(
     format='%(asctime)s %(levelname)s:%(message)s',
      level=logging.INFO)
 
-
 class Crawler:
     def __init__(self, urls=[]):
         self.urls_for_job_ads = []

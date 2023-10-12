@@ -12,7 +12,6 @@ df = pd.read_csv(file_path)
 word_freq = Counter()
 df_new = df[df["Sektör"].str.contains("Bilişim",regex=False)].copy()
 
-
 for text in df_new["İlan-Metni"]:
     word_freq.update(text.split())
 
