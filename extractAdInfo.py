@@ -12,6 +12,13 @@ crawl.run()
 url_list = crawl.get_urls_for_job_ads()
 
 
+def read_csv(csv_file,ad_obj):
+    csv_reader = csv.reader(csv_file)
+    for row in csv_reader:
+        if row == ad_obj.get_info():
+            return False
+    return True
+
 
 def gather_ads():
     ads_list = []
@@ -34,12 +41,15 @@ listOfAds = gather_ads()
 #creating a csv file
 fields = ["Çalışma Şekli","Sektör","Firma","İlani Veren Firma","Pozisyon","İlan-ID","Lokasyon","İlan-Statüsü", "Detail-Aday", "İlan-Metni","Son-Güncelleme"]
 
-with open("Kariyer.csv","w",newline='',encoding="utf-8") as f:
+with open("Kariyer.csv","r+",newline='',encoding="utf-8") as f:
     csv_writer = csv.writer(f)
     csv_writer.writerow(fields)
 
     for ad in listOfAds:
-        csv_writer.writerows([ad.get_info()])
+        if read_csv(f,ad):
+            csv_writer.writerows([ad.get_info()])
+
+
 
 end = time.time()
 print("It took",end - start)

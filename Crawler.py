@@ -2,6 +2,7 @@ import logging
 import requests
 from urllib.parse import urljoin
 from bs4 import BeautifulSoup
+import csv
 
 logging.basicConfig(
     format='%(asctime)s %(levelname)s:%(message)s',
@@ -10,9 +11,8 @@ logging.basicConfig(
 class Crawler:
     def __init__(self, urls=[]):
         self.urls_for_job_ads = []
-        self.visited_urls = []
+        self.visited_urls = open("urls_visited.csv","r+",newline='',encoding="utf-8")
         self.urls_to_visit = urls
-
 
     def download_url(self, url):
         if url is not None:
@@ -28,12 +28,11 @@ class Crawler:
             yield path
 
     def add_url_to_visit(self, url):
-        if url not in self.urls_to_visit and url not in self.visited_urls and self.sanitizeToVisitList(url):
+        if url not in self.urls_to_visit and self.in_csv(url) and self.sanitizeToVisitList(url):
             if url.__contains__("is-ilani")and any(a.isdigit() for a in url):
                 self.urls_for_job_ads.append(url)
 
             self.urls_to_visit.append(url)
-
 
     def sanitizeToVisitList(self,url):
         exclusionList = ["apple","google","cimri","instagram","twitter","facebook","ik-blog",
@@ -44,30 +43,33 @@ class Crawler:
                 return False
         return True
 
-
     def crawl(self, url):
         html = self.download_url(url)
         for url in self.get_linked_urls(url, html):
             self.add_url_to_visit(url)
 
-
-
-
-
     def run(self):
-        while self.urls_to_visit and len(self.urls_for_job_ads) <= 10000:
+        while self.urls_to_visit and len(self.urls_for_job_ads) <= 100:
             url = self.urls_to_visit.pop(0)
-            with open("file.txt","w") as output:
-                output.write(str(self.urls_for_job_ads)+"\n")
             logging.info(f'Crawling:{url}')
             try:
                 self.crawl(url)
             except:
                 logging.exception(f'Failed to Crawl:{url}')
             finally:
-                self.visited_urls.append(url)
-    def print_url_ads(self):
-        print(self.urls_for_job_ads)
-        print(len(self.urls_for_job_ads))
+                self.writeToCsv(url)
+        self.visited_urls.close()
+
     def get_urls_for_job_ads(self):
         return self.urls_for_job_ads
+
+    def writeToCsv(self, url):
+        csv_writer = csv.writer(self.visited_urls)
+        csv_writer.writerow(url,)
+
+    def in_csv(self, url):
+        csv_reader = csv.reader(self.visited_urls,delimiter=' ')
+        for row in csv_reader:
+            if row == url:
+                return False
+        return True
