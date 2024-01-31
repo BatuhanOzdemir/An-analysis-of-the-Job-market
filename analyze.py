@@ -46,4 +46,3 @@ with col1:
 with col2:
 	y_axis = st.selectbox(label="Select the y axis",options=[col for col in df.columns])
 create_button = st.button(label="Create the graph",help="Creates the graph :)")
-if create_button:
